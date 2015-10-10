@@ -9,4 +9,5 @@
                  [org.clojure/tools.logging "0.3.1"]]
   :main ^:skip-aot hypertechnical.core
   :target-path "target/%s"
+  :min-lein-version "2.5.1"
   :profiles {:uberjar {:aot :all}})
