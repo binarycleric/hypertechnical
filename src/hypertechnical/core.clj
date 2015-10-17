@@ -7,7 +7,8 @@
     [twitter.callbacks.handlers]
     [twitter.api.restful]
     [twitter.api.streaming]
-    [clojure.pprint])
+    [clojure.pprint]
+    [clojure.set :only [select]])
   (:require
    [clojure.data.json :as json]
    [http.async.client :as ac]
@@ -37,12 +38,20 @@
     (statuses-update :oauth-creds twitter-credentials
                      :params {:status message :in_reply_to_status_id status_id}))) 
 
+(defn about-computers-evening? [tweet]
+  (let [message (get tweet :text)
+        patterns #{#"[cC]omputers[,]?\show do they even[\?]?" #"[hH]ow do computers even[\?]?$"}]
+
+    (not-empty (select (fn [pattern] (re-find pattern message)) patterns))))
+
 (defn -main [& args]
   (client/start-twitter-stream stream)
 
   (while 
     true
     (time (Thread/sleep (* 1024 5)))
-    (let [tweets (get (client/retrieve-queues stream) :tweet)]
-      (if-not (nil? tweets)
-        (doseq [t tweets] (handle-matching-tweet t)))))) 
+    (let [raw-tweets (get (client/retrieve-queues stream) :tweet)
+          filtered-tweets (select about-computers-evening? raw-tweets)]
+
+      (if-not (nil? filtered-tweets)
+        (doseq [t filtered-tweets] (handle-matching-tweet t))))))
