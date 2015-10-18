@@ -30,8 +30,8 @@
                                                   :params {:track search_terms})))
 
 (defn handle-matching-tweet [tweet]
-  (let [screen_name (get (get tweet :user) :screen_name)
-        status_id (get tweet :id)
+  (let [screen_name (:screen_name (:user tweet))
+        status_id (:id tweet)
         message (str "@" screen_name " Computers even by setting the lowest order bit to False, duh!")]
 
     (log/info "Sending" message "to" screen_name ". status_id:" status_id)
@@ -39,7 +39,7 @@
                      :params {:status message :in_reply_to_status_id status_id}))) 
 
 (defn about-computers-evening? [tweet]
-  (let [message (get tweet :text)
+  (let [message (:text tweet)
         patterns #{#"[cC]omputers[,]?\show do they even[\?]?" #"[hH]ow do computers even[\?]?$"}]
 
     (not-empty (select (fn [pattern] (re-find pattern message)) patterns))))
@@ -50,7 +50,7 @@
   (while 
     true
     (time (Thread/sleep (* 1024 5)))
-    (let [raw-tweets (get (client/retrieve-queues stream) :tweet)
+    (let [raw-tweets (:tweet (client/retrieve-queues stream))
           filtered-tweets (select about-computers-evening? raw-tweets)]
 
       (if-not (nil? filtered-tweets)
