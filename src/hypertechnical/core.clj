@@ -22,7 +22,8 @@
   "computers how do they even, how do computers even")
 
 (def search-patterns
-  #{#"[cC]omputers[,]?\show do they even[\?]?" #"[hH]ow do computers even[\?]?$"})
+  #{#"[cC]omputers[\.\,\!]?\s[hH]ow do they even[\.\?\!]?" 
+    #"[hH]ow do computers even[\?\!]?$"})
 
 (def twitter-credentials 
   (make-oauth-creds (System/getenv "TWITTER_CONSUMER_KEY")
@@ -47,11 +48,12 @@
     (statuses-update :oauth-creds twitter-credentials
                      :params {:status message :in_reply_to_status_id status-id}))) 
 
+(defn get-pattern-matches [patterns, message]
+  (select (fn [pattern] (re-find pattern message)) patterns))
+
 (defn about-computers-evening? [tweet]
   (let [message (:text tweet)]
-
-    (not-empty 
-      (select (fn [pattern] (re-find pattern message)) search-patterns))))
+    (not (empty? (get-pattern-matches search-patterns, message)))))
 
 ; TODO: figure out better names for all this.
 (defn process-tweets [tweets]

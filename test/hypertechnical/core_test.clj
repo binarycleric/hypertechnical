@@ -4,10 +4,13 @@
 
 (def tweets-about-computers-evening
   '["computers how do they even. seriously!"
+    "Computers! How do they even?!" 
+    "Computers! How do they even?" 
     "Computers, how do they even?"
     "Computers how do they even?"
     "Computers, how do they even"
     "Computers how do they even"
+    "Computers. How do they even."
     "How do computers even?"
     "how do computers even?"
     "How do computers even"
